@@ -2,6 +2,17 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Spring Boot-ServiceRegistryApplication<ServiceRegistry>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.learning.ServiceRegistry.ServiceRegistryApplication",
+            "projectName": "ServiceRegistry",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": "-Dcom.sun.management.jmxremote -Dspring.jmx.enabled=true -Dspring.application.admin.enabled=true -Dspring.boot.project.name=ServiceRegistry"
+        },
+        {
+            "type": "java",
             "name": "Spring Boot-ContentServiceApplication<ContentService>",
             "request": "launch",
             "cwd": "${workspaceFolder}",
@@ -9,7 +20,7 @@
             "projectName": "ContentService",
             "args": "",
             "envFile": "${workspaceFolder}/.env",
-            "vmArgs": " -Dcom.sun.management.jmxremote -Dspring.jmx.enabled=true -Dspring.application.admin.enabled=true -Dspring.boot.project.name=ContentService"
+            "vmArgs": "-Dcom.sun.management.jmxremote -Dspring.jmx.enabled=true -Dspring.application.admin.enabled=true -Dspring.boot.project.name=ContentService"
         },
         {
             "type": "java",
@@ -20,7 +31,7 @@
             "projectName": "CourseService",
             "args": "",
             "envFile": "${workspaceFolder}/.env",
-            "vmArgs": " -Dcom.sun.management.jmxremote"
+            "vmArgs": "-Dcom.sun.management.jmxremote -Dspring.jmx.enabled=true -Dspring.application.admin.enabled=true -Dspring.boot.project.name=CourseService"
         },
         {
             "type": "java",
@@ -30,7 +41,8 @@
             "mainClass": "com.learning.userservice.UserserviceApplication",
             "projectName": "userservice",
             "args": "",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": "-Dcom.sun.management.jmxremote -Dspring.jmx.enabled=true -Dspring.application.admin.enabled=true -Dspring.boot.project.name=userservice"
         },
         {
             "type": "java",
@@ -41,7 +53,7 @@
             "projectName": "UnitService",
             "args": "",
             "envFile": "${workspaceFolder}/.env",
-            "vmArgs": " -Dcom.sun.management.jmxremote -Dspring.jmx.enabled=true -Dspring.application.admin.enabled=true -Dspring.boot.project.name=UnitService"
+            "vmArgs": "-Dcom.sun.management.jmxremote -Dspring.jmx.enabled=true -Dspring.application.admin.enabled=true -Dspring.boot.project.name=UnitService"
         }
     ]
 }
