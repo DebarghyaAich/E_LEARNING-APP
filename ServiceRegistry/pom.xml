@@ -41,6 +41,12 @@
 			<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
 		</dependency>
 
+		<!-- Spring Web — embedded Tomcat + Eureka dashboard UI -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
 		<!-- Actuator for health/info endpoints -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
