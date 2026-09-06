@@ -3,15 +3,8 @@
   "java.jdt.ls.lombokSupport.enabled": true,
   "java.configuration.updateBuildConfiguration": "automatic",
   "java.server.launchMode": "Standard",
-  "java.jdt.ls.java.home": "C:\\Program Files\\Java\\jdk-22",
-  "java.configuration.runtimes": [
-    {
-      "name": "JavaSE-22",
-      "path": "C:\\Program Files\\Java\\jdk-22",
-      "default": true
-    }
-  ],
   "java.import.maven.enabled": true,
   "maven.terminal.useJavaHome": true,
-  "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx4G -Xms100m -Xlog:disable"
+  "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx4G -Xms100m -Xlog:disable",
+  "java.debug.settings.onBuildFailureProceed": true
 }

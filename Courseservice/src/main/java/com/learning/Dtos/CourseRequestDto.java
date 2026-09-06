@@ -2,8 +2,6 @@ package com.learning.Dtos;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.learning.Entities.ThumbnailType;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -23,7 +21,11 @@ public class CourseRequestDto {
     @NotBlank(message = "Category is required")
     private String category;
 
-    private ThumbnailType thumbnailType;
+    @NotBlank(message = "Course Level is required")
+    private String courseLevel;
+
+    @NotNull(message = "Price is required")
+    private double price;
 
     private MultipartFile thumbnail;
 }

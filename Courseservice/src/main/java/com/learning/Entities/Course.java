@@ -28,9 +28,10 @@ public class Course {
     @Column(nullable = false, length = 100)
     private String category;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 50)
-    private ThumbnailType thumbnailType;
+    @Column(nullable = false, length = 50)
+    private String courseLevel;
+    @Column(nullable = false)
+    private double price;
 
     @Column(length = 500)
     private String thumbnailUrl;

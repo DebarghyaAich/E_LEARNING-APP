@@ -8,6 +8,6 @@ import com.learning.Entities.Course;
 @Repository
 public interface CourseRepository extends JpaRepository<Course, String> {
 
-    Boolean existsByCourseID(String courseId);
+    Boolean existsByCourseId(String courseId);
 
 }

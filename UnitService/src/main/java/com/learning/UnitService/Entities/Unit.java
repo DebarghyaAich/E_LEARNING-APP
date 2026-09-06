@@ -1,7 +1,6 @@
-package com.learning.ContentService.Entities;
+package com.learning.UnitService.Entities;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -18,37 +17,29 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "contents")
+@Table(name = "units")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Content {
+public class Unit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String contentId;
+    private String unitId;
 
     @Column(nullable = false)
     private String courseId;
 
-    @Column(nullable = false)
-    private String unitId;
-
-    @Column(nullable = false)
-    private String lessonIndex;
-
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 150)
     private String title;
 
-    @Column(length = 500)
+    @Column(length = 3000)
     private String description;
 
     @Column(nullable = false)
-    private Long duration;
-
-    @Column(columnDefinition = "TEXT")
-    private String contentUrl;
+    @Builder.Default
+    private Integer unitIndex = 1;
 
     @Column(nullable = false, updatable = false)
     @CreationTimestamp

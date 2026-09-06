@@ -2,6 +2,7 @@ package com.learning.ContentService.Controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,8 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.learning.ContentService.Dtos.ContentBatchRequest;
-import com.learning.ContentService.Service.ContentService;
+import com.learning.ContentService.Dtos.ContentBatchResponseDto;
+import com.learning.ContentService.Service.ContentUploadService;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -20,20 +23,33 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ContentController {
 
-    private final ContentService contentService;
+    private final ContentUploadService contentUploadService;
 
-    public ContentController(ContentService contentService) {
-        this.contentService = contentService;
+    public ContentController(ContentUploadService contentUploadService) {
+        this.contentUploadService = contentUploadService;
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadContent(
-            @ModelAttribute ContentBatchRequest request,
-            @RequestParam(name = "videos", required = false) List<MultipartFile> videos,
-            @RequestParam(name = "pdfs", required = false) List<MultipartFile> pdfs) {
+    public ResponseEntity<ContentBatchResponseDto> uploadContent(
+            @RequestParam(name = "courseId", required = false) String courseIdParam,
+            @RequestParam(name = "courseID", required = false) String courseIDParam,
+            @RequestParam(name = "unitId", required = false) String unitIdParam,
+            @RequestParam(name = "unitID", required = false) String unitIDParam,
+            @ModelAttribute @Valid ContentBatchRequest request,
+            @RequestParam(name = "files", required = false) List<MultipartFile> files) throws Exception {
 
-        contentService.uploadContents(request, videos, pdfs);
-        return ResponseEntity.ok("Content uploaded successfully");
+        String courseId = (courseIdParam != null && !courseIdParam.isBlank()) ? courseIdParam : courseIDParam;
+        if (courseId == null || courseId.isBlank()) {
+            throw new IllegalArgumentException("Course ID is required as a request parameter");
+        }
+
+        String unitId = (unitIdParam != null && !unitIdParam.isBlank()) ? unitIdParam : unitIDParam;
+        if (unitId == null || unitId.isBlank()) {
+            throw new IllegalArgumentException("Unit ID is required as a request parameter");
+        }
+
+        ContentBatchResponseDto response = contentUploadService.uploadContents(courseId, unitId, request, files);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
 }

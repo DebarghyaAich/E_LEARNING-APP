@@ -6,7 +6,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.learning.Dtos.CourseRequestDto;
 import com.learning.Dtos.CourseResponseDto;
 import com.learning.Entities.Course;
-import com.learning.Entities.ThumbnailType;
 import com.learning.Repository.CourseRepository;
 import com.learning.services.CourseService;
 import com.learning.services.ThumbnailUpload;
@@ -24,24 +23,17 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseResponseDto createCourse(CourseRequestDto request, MultipartFile thumbnail) {
-        ThumbnailType type = request.getThumbnailType();
-        if (type == null && thumbnail != null && !thumbnail.isEmpty()) {
-            try {
-                type = thumbnailUpload.detectThumbnailType(thumbnail);
-            } catch (Exception ignored) {
-                type = ThumbnailType.IMAGE;
-            }
-        }
-        if (type == null) {
-            type = ThumbnailType.IMAGE;
+        String thumbnailUri = null;
+        if (thumbnail != null && !thumbnail.isEmpty()) {
+            thumbnailUri = thumbnailUpload.upload(thumbnail);
         }
 
-        String thumbnailUri = thumbnailUpload.upload(thumbnail, type);
         Course course = Course.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .category(request.getCategory())
-                .thumbnailType(type)
+                .courseLevel(request.getCourseLevel())
+                .price(request.getPrice())
                 .thumbnailUrl(thumbnailUri)
                 .build();
         Course saved = courseRepository.save(course);
@@ -55,7 +47,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Boolean findCourseId(String courseId) {
-        return courseRepository.existsByCourseID(courseId);
+        return courseRepository.existsByCourseId(courseId);
     }
 
 }

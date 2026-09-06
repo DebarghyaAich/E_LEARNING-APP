@@ -1,16 +1,12 @@
 package com.learning.services.implementations;
 
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Locale;
-
 import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.learning.Entities.ThumbnailType;
 import com.learning.configurations.MinioConfig;
 import com.learning.services.ThumbnailUpload;
 
@@ -19,12 +15,6 @@ import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
-import io.minio.errors.ErrorResponseException;
-import io.minio.errors.InsufficientDataException;
-import io.minio.errors.InternalException;
-import io.minio.errors.InvalidResponseException;
-import io.minio.errors.ServerException;
-import io.minio.errors.XmlParserException;
 import io.minio.http.Method;
 
 @Service
@@ -35,7 +25,6 @@ public class ThumbnailUploadImpl implements ThumbnailUpload {
     public ThumbnailUploadImpl(MinioClient minioClient, MinioConfig minioConfig) {
         this.minioClient = minioClient;
         this.minioConfig = minioConfig;
-
     }
 
     private static final List<String> IMAGE_EXTENSIONS = List.of(
@@ -52,43 +41,45 @@ public class ThumbnailUploadImpl implements ThumbnailUpload {
             ".ico");
 
     @Override
-    public ThumbnailType detectThumbnailType(MultipartFile file) {
+    public boolean isImageFile(MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            throw new RuntimeException("File is empty");
-        }
-        // from mimie type
-        String mimeType = file.getContentType();
-        String lowermime = mimeType.toLowerCase(Locale.ROOT);
-        if (lowermime.contains("image/")) {
-            return ThumbnailType.IMAGE;
+            return false;
         }
 
-        // from original file name.
-        String fileExtension = file.getOriginalFilename();
-        if (fileExtension == null) {
-            throw new RuntimeException("File extension is not supported");
+        // Check MIME type
+        String mimeType = file.getContentType();
+        if (mimeType != null && mimeType.toLowerCase(Locale.ROOT).startsWith("image/")) {
+            return true;
         }
-        fileExtension = fileExtension.substring(fileExtension.lastIndexOf(".")).toLowerCase();
-        if (IMAGE_EXTENSIONS.contains(fileExtension)) {
-            return ThumbnailType.IMAGE;
+
+        // Check file extension
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename != null && originalFilename.contains(".")) {
+            String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."))
+                    .toLowerCase(Locale.ROOT);
+            if (IMAGE_EXTENSIONS.contains(fileExtension)) {
+                return true;
+            }
         }
-        throw new RuntimeException("File extension is not supported");
+
+        return false;
     }
 
     @Override
-    public String upload(MultipartFile file, ThumbnailType thumbnailType) {
+    public String upload(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new RuntimeException("File is empty");
         }
-        // check thumbnail type is matched with file's thumbnail type
-        if (thumbnailType != detectThumbnailType(file)) {
-            throw new RuntimeException("Thumbnail type is not matched with file's thumbnail type");
+
+        if (!isImageFile(file)) {
+            throw new RuntimeException("Only image content is allowed for course thumbnail");
         }
-        // get unique filename.
+
+        // get unique filename
         String fileName = (file.getOriginalFilename() != null) ? file.getOriginalFilename().replaceAll("\\s", "_")
                 : "thumbnail";
         String uuid = UUID.randomUUID().toString();
-        String folder = detectThumbnailType(file) == ThumbnailType.IMAGE ? "course/image/" : "course/null/";
+        String folder = "course/image/";
 
         String objectName = folder + uuid + "-" + fileName;
 
@@ -105,7 +96,6 @@ public class ThumbnailUploadImpl implements ThumbnailUpload {
         } catch (Exception e) {
             throw new RuntimeException("Failed to upload thumbnail to MinIO: " + e.getMessage(), e);
         }
-
     }
 
     @Override
