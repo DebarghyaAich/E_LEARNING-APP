@@ -13,6 +13,7 @@
 	<description>Aggregator for E-Learning Microservices</description>
 
 	<modules>
+		<module>ServiceRegistry</module>
 		<module>ContentService</module>
 		<module>Courseservice</module>
 		<module>userservice</module>

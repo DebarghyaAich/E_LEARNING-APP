@@ -1,0 +1,30 @@
+server:
+  port: 8761
+
+spring:
+  application:
+    name: service-registry
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    # This is the server — it should NOT register itself or fetch registry from itself
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+  server:
+    # Wait time before starting to evict instances (ms)
+    wait-time-in-ms-when-sync-empty: 0
+    # Reduce eviction interval for local dev
+    eviction-interval-timer-in-ms: 5000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+  endpoint:
+    health:
+      show-details: always
