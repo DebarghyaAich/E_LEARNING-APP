@@ -1,0 +1,31 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: ContentService
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/elearning-content
+    username: postgres
+    password: debarghya
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+minio:
+  url: http://localhost:9000
+  access-key: admin
+  secret-key: admin12345
+  bucket-name: content-files
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always

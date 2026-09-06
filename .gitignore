@@ -1,0 +1,23 @@
+# Compiled class files & build directories
+**/target/
+target/
+
+# IDE / Editor files
+.idea/
+*.iws
+*.iml
+*.ipr
+.apt_generated
+.factorypath
+.settings/
+.springBeans
+.sts4-cache
+bin/
+
+# Environment files
+.env
+*.env.local
+
+# OS files
+.DS_Store
+Thumbs.db

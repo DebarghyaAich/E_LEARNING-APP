@@ -1,0 +1,47 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-ContentServiceApplication<ContentService>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.learning.ContentService.ContentServiceApplication",
+            "projectName": "ContentService",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote -Dspring.jmx.enabled=true -Dspring.application.admin.enabled=true -Dspring.boot.project.name=ContentService"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-CourseServiceApplication<CourseService>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.learning.CourseServiceApplication",
+            "projectName": "CourseService",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-UserserviceApplication<userservice>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.learning.userservice.UserserviceApplication",
+            "projectName": "userservice",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-UnitServiceApplication<UnitService>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.learning.UnitService.UnitServiceApplication",
+            "projectName": "UnitService",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": " -Dcom.sun.management.jmxremote -Dspring.jmx.enabled=true -Dspring.application.admin.enabled=true -Dspring.boot.project.name=UnitService"
+        }
+    ]
+}

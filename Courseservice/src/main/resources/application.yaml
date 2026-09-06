@@ -1,0 +1,31 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: CourseService
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/elearning-course
+    username: postgres
+    password: debarghya
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+minio:
+  url: http://localhost:9000
+  access-key: admin
+  secret-key: admin12345
+  bucket-name: course-thumbnail
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always

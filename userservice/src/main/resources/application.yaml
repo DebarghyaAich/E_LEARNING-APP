@@ -1,0 +1,19 @@
+
+server:
+  port: 8081
+
+
+spring:
+  application:
+    name: userservice
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/elearning-user
+    username: postgres
+    password: debarghya
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
