@@ -10,4 +10,6 @@ public interface CourseRepository extends JpaRepository<Course, String> {
 
     Boolean existsByCourseId(String courseId);
 
+    Course findByCourseId(String courseId);
+
 }

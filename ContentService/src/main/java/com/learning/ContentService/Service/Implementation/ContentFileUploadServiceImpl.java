@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,18 +24,11 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ContentBatchFileUploadServiceImpl implements ContentFileUploadService {
+public class ContentFileUploadServiceImpl implements ContentFileUploadService {
 
     private final MinioClient minioClient;
     private final MinioConfig properties;
     private final CourseImplService courseImplService;
-
-    private static final Pattern EXPLICIT_LECTURE_PATTERN = Pattern
-            .compile("(?i)(?:lecture|lec|lesson)[_\\-\\s]*(\\d+)");
-
-    private static final Pattern LEADING_NUMBER_PATTERN = Pattern.compile("^\\s*(\\d+)(?:[_\\-\\s.]|$)");
-
-    private static final Pattern TRAILING_NUMBER_PATTERN = Pattern.compile("[_\\-\\s](\\d+)$");
 
     private static final List<String> VIDEO_EXTENSIONS = Arrays.asList(
             ".mp4",
@@ -49,8 +40,7 @@ public class ContentBatchFileUploadServiceImpl implements ContentFileUploadServi
             ".wmv");
 
     @Override
-    public String uploadContent(MultipartFile file, String courseId) throws Exception {
-
+    public String uploadContent(MultipartFile file, String courseId, String lessonIndex) throws Exception {
         if (file == null || file.isEmpty()) {
             throw new RuntimeException("No file provided");
         }
@@ -67,61 +57,19 @@ public class ContentBatchFileUploadServiceImpl implements ContentFileUploadServi
         ContentType contentType = detectContentType(file);
 
         if (contentType == ContentType.NONE) {
-            throw new RuntimeException(
-                    "Unsupported file type: " + file.getOriginalFilename());
+            throw new RuntimeException("Unsupported file type: " + file.getOriginalFilename());
         }
 
-        // pdf / video
         String subFolder = contentType.name().toLowerCase(Locale.ROOT);
-
-        // course_123
         String coursePattern = "course_" + courseId;
+        String lecturePattern = "lecture_" + (lessonIndex != null && !lessonIndex.isBlank() ? lessonIndex.trim() : "1");
 
-        /*
-         * Determine lecture number.
-         *
-         * Priority:
-         * 1. lessonIndex from request
-         * 2. lecture number extracted from filename
-         * 3. default to "1"
-         */
-        // String lectureNumber;
-
-        // if (lessonIndex != null && !lessonIndex.trim().isEmpty()) {
-
-        // lectureNumber = lessonIndex.trim();
-
-        // } else {
-
-        String lectureNumber = extractLectureNumber(
-                file.getOriginalFilename());
-
-        if (lectureNumber == null || lectureNumber.isBlank()) {
-            throw new RuntimeException("wrong filename format for " + file.getOriginalFilename());
-        }
-        // }
-
-        // lecture_01, lecture_02, lecture_10, etc.
-        String lecturePattern = "lecture_" + lectureNumber;
-
-        // Generate unique ID
         String uuid = UUID.randomUUID().toString();
-
-        // Get original filename
         String originalFilename = file.getOriginalFilename();
-
-        // Replace spaces with _
         String cleanFileName = (originalFilename != null)
                 ? originalFilename.replaceAll("\\s+", "_")
                 : "content.file";
 
-        /*
-         * Example object path:
-         *
-         * video/course_101/lecture_03/uuid-Spring_Boot.mp4
-         *
-         * pdf/course_101/lecture_03/uuid-notes.pdf
-         */
         String objName = subFolder + "/"
                 + coursePattern + "/"
                 + lecturePattern + "/"
@@ -151,7 +99,7 @@ public class ContentBatchFileUploadServiceImpl implements ContentFileUploadServi
                                 Map.of(
                                         "course-id", courseId,
                                         "lecture-pattern", lecturePattern,
-                                        "lecture-index", lectureNumber))
+                                        "lecture-index", (lessonIndex != null ? lessonIndex.trim() : "1")))
                         .build());
 
         // Generate presigned URL
@@ -162,37 +110,6 @@ public class ContentBatchFileUploadServiceImpl implements ContentFileUploadServi
                         .object(objName)
                         .expiry(60 * 60 * 24 * 7)
                         .build());
-    }
-
-    @Override
-    public String extractLectureNumber(String filename) {
-        if (filename == null || filename.isBlank()) {
-            return null;
-        }
-
-        // remove the extension postion from the file name if exists e.g. .mp4 or .pdf
-        int lastDotIndex = filename.lastIndexOf('.');
-        String baseName = (lastDotIndex > 0) ? filename.substring(0, lastDotIndex) : filename;
-
-        // 1. Explicit keyword match (e.g. lecture_1, lec-02, lesson 3, unit_4)
-        Matcher explicitMatcher = EXPLICIT_LECTURE_PATTERN.matcher(baseName);
-        if (explicitMatcher.find()) {
-            return explicitMatcher.group(1);
-        }
-
-        // 2. Leading number match (e.g. 01_intro, 2-overview, 3.setup)
-        Matcher leadingMatcher = LEADING_NUMBER_PATTERN.matcher(baseName);
-        if (leadingMatcher.find()) {
-            return leadingMatcher.group(1);
-        }
-
-        // 3. Trailing number match (e.g. intro_1, chapter-2)
-        Matcher trailingMatcher = TRAILING_NUMBER_PATTERN.matcher(baseName);
-        if (trailingMatcher.find()) {
-            return trailingMatcher.group(1);
-        }
-
-        return null;
     }
 
     @Override

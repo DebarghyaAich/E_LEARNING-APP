@@ -23,6 +23,7 @@ public class UnitServiceImpl implements UnitService {
     private final UnitRepository unitRepository;
     private final CourseClient courseClient;
 
+    // Creating a unit under a course (by courseId)
     @Override
     @Transactional
     public UnitResponseDto createUnit(UnitRequestDto request, String courseId) {
@@ -81,15 +82,6 @@ public class UnitServiceImpl implements UnitService {
             return false;
         }
         return unitRepository.existsByUnitId(unitId.trim());
-    }
-
-    @Override
-    public Unit getUnitById(String unitId) {
-        if (unitId == null || unitId.isBlank()) {
-            throw new IllegalArgumentException("Unit ID is required");
-        }
-        return unitRepository.findById(unitId.trim())
-                .orElseThrow(() -> new RuntimeException("Unit not found with id " + unitId));
     }
 
     @Override

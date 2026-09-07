@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class UnitRequestDto {
 
+    private String courseId;
+
     @NotBlank(message = "Title is required")
     @Size(max = 150, message = "Title cannot exceed 150 characters")
     private String title;

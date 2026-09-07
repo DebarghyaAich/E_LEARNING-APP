@@ -22,7 +22,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
 
 minio:
   url: http://localhost:9000

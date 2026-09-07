@@ -5,14 +5,10 @@ import com.learning.ContentService.Entities.ContentType;
 
 public interface ContentFileUploadService {
 
-    // int extractLectureNumber(String filename);
-
     void createBucketIfNotExists(String bucketName);
 
     ContentType detectContentType(MultipartFile file) throws Exception;
 
-    String extractLectureNumber(String filename);
-
-    String uploadContent(MultipartFile file, String courseId) throws Exception;
+    String uploadContent(MultipartFile file, String courseId, String lessonIndex) throws Exception;
 
 }

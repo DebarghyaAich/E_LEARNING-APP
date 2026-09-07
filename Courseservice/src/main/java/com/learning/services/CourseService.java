@@ -1,5 +1,7 @@
 package com.learning.services;
 
+import java.util.List;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import com.learning.Dtos.CourseRequestDto;
@@ -11,4 +13,9 @@ public interface CourseService {
 
     Boolean findCourseId(String courseId);
 
+    CourseResponseDto enterIntoCourse(String courseId);
+
+    CourseResponseDto updateCourse(String courseId, CourseRequestDto request, MultipartFile thumbnail);
+
+    List<CourseResponseDto> getAllCourses();
 }

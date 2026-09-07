@@ -1,7 +1,5 @@
-
 server:
   port: 8081
-
 
 spring:
   application:
@@ -15,13 +13,12 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
 
 management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: "*"
   endpoint:
     health:
       show-details: always

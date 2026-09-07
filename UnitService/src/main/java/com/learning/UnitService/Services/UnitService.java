@@ -12,8 +12,5 @@ public interface UnitService {
 
     Boolean unitExists(String unitId);
 
-    Unit getUnitById(String unitId);
-
     List<Unit> getUnitsByCourseId(String courseId);
-
 }

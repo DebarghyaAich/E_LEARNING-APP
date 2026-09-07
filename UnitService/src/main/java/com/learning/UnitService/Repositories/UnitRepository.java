@@ -13,6 +13,8 @@ public interface UnitRepository extends JpaRepository<Unit, String> {
 
     boolean existsByUnitId(String unitId);
 
+    Optional<Unit> findByUnitId(String unitId);
+
     List<Unit> findByCourseIdOrderByUnitIndexAsc(String courseId);
 
     Optional<Unit> findByCourseIdAndUnitIndex(String courseId, Integer unitIndex);

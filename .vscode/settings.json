@@ -5,6 +5,25 @@
   "java.server.launchMode": "Standard",
   "java.import.maven.enabled": true,
   "maven.terminal.useJavaHome": true,
-  "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx4G -Xms100m -Xlog:disable",
-  "java.debug.settings.onBuildFailureProceed": true
+  "maven.pomPath": "pom.xml",
+  "java.jdt.ls.java.home": "C:\\Program Files\\Java\\jdk-22",
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-22",
+      "path": "C:\\Program Files\\Java\\jdk-22",
+      "default": true
+    }
+  ],
+  "java.jdt.ls.vmargs": "-XX:+UseG1GC -XX:+UseStringDeduplication -XX:MaxMetaspaceSize=512m -Dsun.zip.disableMemoryMapping=true -Xmx2048m -Xms256m",
+  "java.maxConcurrentBuilds": 1,
+  "java.debug.settings.onBuildFailureProceed": true,
+  "boot-java.live-information.automatic-connection.on": true,
+  "boot-java.live-information.all-local-java-processes": true,
+  "boot-java.live-information.fetch-data.max-retries": 5,
+  "spring-boot-dashboard.all-local-apps": true,
+  "spring-boot.ls.checkJVM": false,
+  "files.associations": {
+    "*.java": "java"
+  },
+  "java.autobuild.enabled": true
 }
