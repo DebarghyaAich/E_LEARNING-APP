@@ -7,6 +7,7 @@ import CreateCourseModal from './components/CreateCourseModal';
 import CreateUnitModal from './components/CreateUnitModal';
 import EditCourseModal from './components/EditCourseModal';
 import UploadContentModal from './components/UploadContentModal';
+import UserModal from './components/UserModal';
 import {
   fetchAllCourses,
   enterIntoCourse,
@@ -14,7 +15,9 @@ import {
   updateCourse,
   createUnit,
   uploadContent,
-  checkBackendHealth
+  checkAllServicesHealth,
+  getActiveUser,
+  setActiveUser
 } from './services/api';
 
 export default function App() {
@@ -23,7 +26,20 @@ export default function App() {
   const [selectedCourseData, setSelectedCourseData] = useState({ course: null, units: [] });
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [isLiveServer, setIsLiveServer] = useState(false);
+
+  // User & Identity State (UserService :8081)
+  const [currentUser, setCurrentUser] = useState(getActiveUser());
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+
+  // Microservices Health State (5 Services)
+  const [servicesHealth, setServicesHealth] = useState({
+    course: false,
+    unit: false,
+    content: false,
+    user: false,
+    interaction: false,
+    isAnyLive: false
+  });
 
   // Modals
   const [isCreateCourseOpen, setIsCreateCourseOpen] = useState(false);
@@ -50,13 +66,17 @@ export default function App() {
     }, 4500);
   };
 
-  // Load all courses
+  // Check health of all 5 microservices
+  const pollHealth = useCallback(async () => {
+    const health = await checkAllServicesHealth();
+    setServicesHealth(health);
+  }, []);
+
+  // Load all courses from CourseService
   const loadCourses = useCallback(async () => {
     try {
       setIsLoading(true);
-      const isHealthy = await checkBackendHealth();
-      setIsLiveServer(isHealthy);
-
+      await pollHealth();
       const result = await fetchAllCourses();
       setCourses(result.data);
     } catch (err) {
@@ -65,11 +85,13 @@ export default function App() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [pollHealth]);
 
   useEffect(() => {
     loadCourses();
-  }, [loadCourses]);
+    const interval = setInterval(pollHealth, 15000);
+    return () => clearInterval(interval);
+  }, [loadCourses, pollHealth]);
 
   // Enter into course (CourseService -> UnitClient -> ContentClient)
   const handleSelectCourse = async (courseId) => {
@@ -104,7 +126,7 @@ export default function App() {
       addToast(
         result.isLive
           ? 'Course created in PostgreSQL via CourseService (8082)!'
-          : 'Course created in Interactive Demo Database!'
+          : 'Course created in Eduwerks Session!'
       );
       await loadCourses();
       if (result.data?.courseId) {
@@ -168,7 +190,6 @@ export default function App() {
           ? 'Lesson uploaded & streamed to MinIO via ContentService (8083)!'
           : 'Lesson content added to module playlist!'
       );
-      // Refresh active course hierarchy
       if (selectedCourseId === courseId) {
         const details = await enterIntoCourse(courseId);
         setSelectedCourseData({
@@ -185,24 +206,26 @@ export default function App() {
     setIsEditCourseOpen(true);
   };
 
-  return (
-    <div className="app-container">
-      {/* Dynamic Animated Ambient Background Aura */}
-      <div className="ambient-orb ambient-orb-top"></div>
-      <div className="ambient-orb ambient-orb-bottom"></div>
+  const handleUserChanged = (newUser) => {
+    setCurrentUser(newUser);
+  };
 
+  return (
+    <div className="eduwerks-app-root">
       {/* Navbar */}
       <Navbar
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         onOpenCreateCourse={() => setIsCreateCourseOpen(true)}
         onGoHome={handleGoHome}
-        isLiveServer={isLiveServer}
+        onOpenUserModal={() => setIsUserModalOpen(true)}
+        currentUser={currentUser}
+        servicesHealth={servicesHealth}
         activeView={selectedCourseId ? 'detail' : 'catalog'}
       />
 
       {/* Main Content Area */}
-      <main className="main-content">
+      <main className="eduwerks-main-container">
         {isLoading && (
           <div className="loading-bar-wrapper">
             <div className="loading-bar-fill"></div>
@@ -217,6 +240,7 @@ export default function App() {
             onOpenCreateUnit={handleOpenCreateUnit}
             onOpenUploadContent={handleOpenUploadContent}
             onEditCourse={handleOpenEditCourse}
+            addToast={addToast}
           />
         ) : (
           <CourseList
@@ -263,6 +287,13 @@ export default function App() {
         }}
         onSubmit={handleUpdateCourseSubmit}
         course={courseToEdit}
+      />
+
+      <UserModal
+        isOpen={isUserModalOpen}
+        onClose={() => setIsUserModalOpen(false)}
+        onUserChanged={handleUserChanged}
+        addToast={addToast}
       />
 
       {/* Toast Notifications */}

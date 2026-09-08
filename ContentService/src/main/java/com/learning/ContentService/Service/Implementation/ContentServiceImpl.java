@@ -110,6 +110,29 @@ public class ContentServiceImpl implements ContentService {
         if (unitId == null || unitId.isBlank()) {
             throw new IllegalArgumentException("Unit ID is required");
         }
+        if (unitId.contains(",")) {
+            unitId = unitId.split(",")[0].trim();
+        }
         return contentRepository.findByUnitIdOrderByLessonIndexAsc(unitId.trim());
+    }
+
+    @Override
+    public List<Content> getContentsByCourseId(String courseId) {
+        if (courseId == null || courseId.isBlank()) {
+            throw new IllegalArgumentException("Course ID is required");
+        }
+        if (courseId.contains(",")) {
+            courseId = courseId.split(",")[0].trim();
+        }
+        courseId = courseId.trim();
+        if ("{courseId}".equalsIgnoreCase(courseId)) {
+            throw new RuntimeException("Invalid course ID: '{courseId}'. Please provide a valid course UUID.");
+        }
+        return contentRepository.findByCourseId(courseId);
+    }
+
+    @Override
+    public Boolean contentExists(String contentId) {
+        return contentRepository.existsById(contentId);
     }
 }

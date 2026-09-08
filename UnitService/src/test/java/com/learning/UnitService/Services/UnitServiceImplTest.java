@@ -17,6 +17,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.learning.UnitService.Clients.ContentClient;
 import com.learning.UnitService.Clients.CourseClient;
 import com.learning.UnitService.Dtos.UnitRequestDto;
 import com.learning.UnitService.Dtos.UnitResponseDto;
@@ -33,11 +34,14 @@ class UnitServiceImplTest {
     @Mock
     private CourseClient courseClient;
 
+    @Mock
+    private ContentClient contentClient;
+
     private UnitServiceImpl unitService;
 
     @BeforeEach
     void setUp() {
-        unitService = new UnitServiceImpl(unitRepository, courseClient);
+        unitService = new UnitServiceImpl(unitRepository, courseClient, contentClient);
     }
 
     @Test

@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.learning.Dtos.CourseRequestDto;
 import com.learning.Dtos.CourseResponseDto;
+import com.learning.Dtos.Unit;
 
 public interface CourseService {
 
@@ -14,6 +15,8 @@ public interface CourseService {
     Boolean findCourseId(String courseId);
 
     CourseResponseDto enterIntoCourse(String courseId);
+
+    List<Unit> getUnitsByCourseId(String courseId);
 
     CourseResponseDto updateCourse(String courseId, CourseRequestDto request, MultipartFile thumbnail);
 

@@ -14,4 +14,8 @@ public interface ContentService {
             throws Exception;
 
     List<Content> getContentsByUnitId(String unitId);
+
+    List<Content> getContentsByCourseId(String courseId);
+
+    Boolean contentExists(String contentId);
 }

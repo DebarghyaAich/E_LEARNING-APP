@@ -73,11 +73,17 @@ public class ContentController {
         if (courseId == null || courseId.isBlank()) {
             throw new IllegalArgumentException("Course ID is required as a request parameter");
         }
+        if (courseId.contains(",")) {
+            courseId = courseId.split(",")[0].trim();
+        }
 
         // Validate unitId from request parameters
         String unitId = (unitIdParam != null && !unitIdParam.isBlank()) ? unitIdParam : unitIDParam;
         if (unitId == null || unitId.isBlank()) {
             throw new IllegalArgumentException("Unit ID is required as a request parameter");
+        }
+        if (unitId.contains(",")) {
+            unitId = unitId.split(",")[0].trim();
         }
 
         // Validate ContentRequestDto fields
@@ -132,9 +138,32 @@ public class ContentController {
     }
 
     // Read contents by unitId
-    @GetMapping({"/unit/{unitId}", "/unit/view/{unitId}", "/unit/{unitId}/contents"})
+    @GetMapping({ "/unit/{unitId}", "/unit/view/{unitId}", "/unit/{unitId}/contents" })
     public ResponseEntity<List<Content>> getContentsByUnitId(@PathVariable String unitId) {
+        if (unitId != null && unitId.contains(",")) {
+            unitId = unitId.split(",")[0].trim();
+        }
         List<Content> response = contentService.getContentsByUnitId(unitId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    // Read all contents by courseId
+    @GetMapping({ "/course/{courseId}", "/course/view/{courseId}", "/course/{courseId}/contents" })
+    public ResponseEntity<List<Content>> getContentsByCourseId(@PathVariable String courseId) {
+        if (courseId != null && courseId.contains(",")) {
+            courseId = courseId.split(",")[0].trim();
+        }
+        List<Content> response = contentService.getContentsByCourseId(courseId);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @GetMapping("/exists")
+    public ResponseEntity<Boolean> contentExists(@RequestParam String contentId) {
+        if (contentId == null || contentId.isBlank()) {
+            throw new IllegalArgumentException("Content ID is required to check existence");
+        }
+        boolean exists = contentService.contentExists(contentId);
+        return ResponseEntity.status(HttpStatus.OK).body(exists);
+    }
+
 }

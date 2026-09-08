@@ -90,6 +90,18 @@ public class CourseServiceImpl implements CourseService {
     // find a course by its id and get all units (with contents) inside it
     @Override
     public CourseResponseDto enterIntoCourse(String courseId) {
+        if (courseId == null || courseId.isBlank()) {
+            throw new IllegalArgumentException("Course ID is required");
+        }
+        if (courseId.contains(",")) {
+            courseId = courseId.split(",")[0].trim();
+        }
+        courseId = courseId.trim();
+
+        if ("{courseId}".equalsIgnoreCase(courseId)) {
+            throw new RuntimeException("Invalid course ID: '{courseId}'. Please provide a valid course UUID.");
+        }
+
         if (!findCourseId(courseId)) {
             throw new RuntimeException("Course not found with id " + courseId);
         }
@@ -101,6 +113,27 @@ public class CourseServiceImpl implements CourseService {
                 .course(course)
                 .units(units)
                 .build();
+    }
+
+    // Read all units by course ID (enriched with contents)
+    @Override
+    public List<Unit> getUnitsByCourseId(String courseId) {
+        if (courseId == null || courseId.isBlank()) {
+            throw new IllegalArgumentException("Course ID is required");
+        }
+        if (courseId.contains(",")) {
+            courseId = courseId.split(",")[0].trim();
+        }
+        courseId = courseId.trim();
+
+        if ("{courseId}".equalsIgnoreCase(courseId)) {
+            throw new RuntimeException("Invalid course ID: '{courseId}'. Please provide a valid course UUID.");
+        }
+
+        if (!findCourseId(courseId)) {
+            throw new RuntimeException("Course not found with id " + courseId);
+        }
+        return fetchUnitsForCourse(courseId);
     }
 
 

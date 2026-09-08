@@ -1,11 +1,14 @@
 package com.learning.UnitService.Services.Implementations;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.learning.UnitService.Clients.ContentClient;
 import com.learning.UnitService.Clients.CourseClient;
+import com.learning.UnitService.Dtos.Content;
 import com.learning.UnitService.Dtos.UnitRequestDto;
 import com.learning.UnitService.Dtos.UnitResponseDto;
 import com.learning.UnitService.Entities.Unit;
@@ -22,6 +25,7 @@ public class UnitServiceImpl implements UnitService {
 
     private final UnitRepository unitRepository;
     private final CourseClient courseClient;
+    private final ContentClient contentClient;
 
     // Creating a unit under a course (by courseId)
     @Override
@@ -89,7 +93,31 @@ public class UnitServiceImpl implements UnitService {
         if (courseId == null || courseId.isBlank()) {
             throw new IllegalArgumentException("Course ID is required");
         }
-        return unitRepository.findByCourseIdOrderByUnitIndexAsc(courseId.trim());
+        if (courseId.contains(",")) {
+            courseId = courseId.split(",")[0].trim();
+        }
+        courseId = courseId.trim();
+
+        if ("{courseId}".equalsIgnoreCase(courseId)) {
+            throw new RuntimeException("Invalid course ID: '{courseId}'. Please provide a valid course UUID.");
+        }
+
+        List<Unit> units = unitRepository.findByCourseIdOrderByUnitIndexAsc(courseId);
+        if (units != null) {
+            for (Unit unit : units) {
+                if (unit.getContents() == null || unit.getContents().isEmpty()) {
+                    try {
+                        List<Content> contents = contentClient.getContentsByUnitId(unit.getUnitId());
+                        unit.setContents(contents != null ? contents : Collections.emptyList());
+                    } catch (Exception e) {
+                        if (unit.getContents() == null) {
+                            unit.setContents(Collections.emptyList());
+                        }
+                    }
+                }
+            }
+        }
+        return units != null ? units : Collections.emptyList();
     }
 
 }

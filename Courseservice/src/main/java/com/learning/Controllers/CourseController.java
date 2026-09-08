@@ -65,6 +65,13 @@ public class CourseController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    // Read all units by course ID (returns list of units enriched with contents)
+    @GetMapping({"/course/{courseId}/units", "/course/units/{courseId}"})
+    public ResponseEntity<List<Unit>> getUnitsByCourseId(@PathVariable String courseId) {
+        List<Unit> units = courseService.getUnitsByCourseId(courseId);
+        return ResponseEntity.status(HttpStatus.OK).body(units);
+    }
+
     // Update the Course
     @PutMapping(value = "/course/update/{courseId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CourseResponseDto> updateCourse(

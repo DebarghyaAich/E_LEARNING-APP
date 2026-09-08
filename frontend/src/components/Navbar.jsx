@@ -1,84 +1,112 @@
 import React from 'react';
-import { IconBook, IconPlus, IconSearch, IconServer, IconSparkles } from './Icons';
+import {
+  IconGraduationCap,
+  IconPlus,
+  IconSearch,
+  IconServer,
+  IconUser,
+  IconSparkles
+} from './Icons';
 
 export default function Navbar({
   searchTerm,
   setSearchTerm,
   onOpenCreateCourse,
   onGoHome,
-  isLiveServer,
+  onOpenUserModal,
+  currentUser,
+  servicesHealth,
   activeView
 }) {
+  const isAnyLive = servicesHealth?.isAnyLive ?? false;
+
   return (
-    <header className="navbar-wrapper">
-      <div className="navbar-inner">
+    <header className="eduwerks-navbar">
+      <div className="navbar-container">
         {/* Brand & Logo */}
-        <div className="navbar-brand" onClick={onGoHome} role="button" tabIndex={0} id="nav-brand-btn">
-          <div className="brand-icon-box">
-            <IconSparkles size={22} className="brand-icon-sparkle" />
+        <div className="navbar-brand-section" onClick={onGoHome} role="button" tabIndex={0} id="nav-brand-btn">
+          <div className="brand-logo-gem">
+            <IconGraduationCap size={24} className="brand-logo-icon" />
           </div>
-          <div className="brand-text-group">
-            <div className="brand-title">
-              Edu<span className="brand-accent">Flow</span>
-            </div>
-            <span className="brand-tagline">Cloud Microservices Studio</span>
+          <div className="brand-titles">
+            <span className="brand-name">Edu<span className="brand-name-accent">werks</span></span>
+            <span className="brand-tag">Cloud Microservices EdTech</span>
           </div>
         </div>
 
-        {/* Global Search */}
-        <div className="nav-search-container">
-          <IconSearch size={18} className="search-icon" />
+        {/* Global Search Pill */}
+        <div className="navbar-search-wrapper">
+          <IconSearch size={17} className="search-icon-muted" />
           <input
             type="text"
             id="global-search-input"
-            className="nav-search-input"
-            placeholder="Search courses, lessons, tech stack... (e.g. Eureka, MinIO, Feign)"
+            className="navbar-search-field"
+            placeholder="Search microservices courses, lessons, topics..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          {searchTerm && (
+          {searchTerm ? (
             <button className="search-clear-btn" onClick={() => setSearchTerm('')} type="button">
               ×
             </button>
+          ) : (
+            <span className="search-shortcut-badge">⌘K</span>
           )}
         </div>
 
-        {/* Actions & Health Badge */}
-        <div className="navbar-actions">
-          {/* Microservices Health Status */}
+        {/* Action Controls & Health */}
+        <div className="navbar-right-controls">
+          {/* Microservices Health Indicator */}
           <div
-            className={`service-status-pill ${isLiveServer ? 'status-live' : 'status-demo'}`}
-            title={
-              isLiveServer
-                ? 'Connected to Spring Boot CourseService (:8082), UnitService (:8084) & ContentService (:8083)'
-                : 'Backend starting up: Running interactive local simulation'
-            }
+            className={`services-health-pill ${isAnyLive ? 'health-live' : 'health-demo'}`}
+            title={`Services Status: Course (8082): ${servicesHealth?.course ? 'UP' : 'STANDBY'}, Unit (8084): ${servicesHealth?.unit ? 'UP' : 'STANDBY'}, Content (8083): ${servicesHealth?.content ? 'UP' : 'STANDBY'}, User (8081): ${servicesHealth?.user ? 'UP' : 'STANDBY'}, Interaction (8085): ${servicesHealth?.interaction ? 'UP' : 'STANDBY'}`}
           >
-            <span className={`status-dot ${isLiveServer ? 'pulse' : ''}`}></span>
+            <span className={`live-pulse-dot ${isAnyLive ? 'pulsing' : ''}`}></span>
             <IconServer size={14} />
-            <span className="status-label">
-              {isLiveServer ? 'Live Microservices' : 'Demo DB Mode'}
+            <span className="health-label">
+              {isAnyLive ? '5 Microservices Active' : 'Demo DB Mode'}
             </span>
           </div>
 
+          {/* Catalog Home Button when on Course Detail */}
           {activeView !== 'catalog' && (
             <button
-              className="btn btn-secondary btn-sm"
+              className="btn btn-secondary btn-sm nav-back-catalog-btn"
               onClick={onGoHome}
               id="nav-catalog-btn"
             >
-              Browse Catalog
+              Explore Catalog
             </button>
           )}
 
+          {/* New Course Action */}
           <button
-            className="btn btn-primary"
+            className="btn btn-primary btn-sm"
             onClick={onOpenCreateCourse}
             id="nav-create-course-btn"
           >
-            <IconPlus size={18} />
+            <IconPlus size={16} />
             <span>New Course</span>
           </button>
+
+          {/* Active User Avatar Pill */}
+          <div
+            className="nav-user-profile-pill"
+            onClick={onOpenUserModal}
+            role="button"
+            tabIndex={0}
+            title="Manage User Profile & Identity (UserService :8081)"
+          >
+            <img
+              src={currentUser?.avatarUrl || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=128&q=80'}
+              alt={currentUser?.firstName || 'User'}
+              className="nav-user-avatar"
+            />
+            <div className="nav-user-info">
+              <span className="nav-user-name">{currentUser?.firstName || 'Guest'}</span>
+              <span className="nav-user-role-badge">{currentUser?.role || 'STUDENT'}</span>
+            </div>
+          </div>
         </div>
       </div>
     </header>

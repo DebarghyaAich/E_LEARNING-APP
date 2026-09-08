@@ -24,6 +24,7 @@ A distributed, reactive, and cloud-native microservices backend for an enterpris
    - [3. Course Service](#3-course-service-port-8082)
    - [4. Unit Service](#4-unit-service-port-8084)
    - [5. Content Service](#5-content-service-port-8083)
+   - [6. Interaction Service](#6-interaction-service-port-8085)
 9. [Inter-Service Communication Flow](#inter-service-communication-flow)
 10. [Error Handling & Resilience](#error-handling--resilience)
 11. [Testing & Verification](#testing--verification)
@@ -47,6 +48,7 @@ graph TD
         CS["Course Service<br/>Port: 8082"]
         UN["Unit Service<br/>Port: 8084"]
         CT["Content Service<br/>Port: 8083"]
+        IS["Interaction Service<br/>Port: 8085"]
     end
 
     subgraph Databases [PostgreSQL - Port: 5432]
@@ -54,6 +56,7 @@ graph TD
         DB_CS[("elearning-course")]
         DB_UN[("elearning-unit")]
         DB_CT[("elearning-content")]
+        DB_IS[("elearning-interaction")]
     end
 
     subgraph Media Storage [MinIO S3 - Port: 9000 / 9001]
@@ -66,12 +69,14 @@ graph TD
     CS -.->|Registers| SR
     UN -.->|Registers| SR
     CT -.->|Registers| SR
+    IS -.->|Registers| SR
 
     %% Client Ingress
     Client -->|Auth & Profiles| US
     Client -->|Course Management & Views| CS
     Client -->|Units Curriculum| UN
     Client -->|Lesson Media & Streaming| CT
+    Client -->|Ratings & Comments| IS
 
     %% Inter-service Feign Calls
     CS -->|"Feign: fetchUnitsByCourseId()"| UN
@@ -86,6 +91,7 @@ graph TD
     CS --> DB_CS
     UN --> DB_UN
     CT --> DB_CT
+    IS --> DB_IS
 
     %% Media Storage persistence
     CS -->|Course Covers & Thumbnails| MN_TB
@@ -103,6 +109,7 @@ graph TD
 | **[Courseservice](file:///c:/Users/Debarghya2/Desktop/E_Learning_Microservices/Courseservice)** | `8082` | `elearning-course` | Course lifecycle (`DRAFT`, `PUBLISHED`, `ARCHIVED`), metadata management, thumbnail storage, and hierarchical course-tree assembly. | OpenFeign (`UnitService`, `ContentService`), MinIO (`course-thumbnail`) |
 | **[UnitService](file:///c:/Users/Debarghya2/Desktop/E_Learning_Microservices/UnitService)** | `8084` | `elearning-unit` | Course curriculum structuring, sequential auto-indexing (`unitIndex`), and unit content aggregation. | OpenFeign (`CourseService`, `ContentService`) |
 | **[ContentService](file:///c:/Users/Debarghya2/Desktop/E_Learning_Microservices/ContentService)** | `8083` | `elearning-content` | Multipart lesson upload, video/document object storage, lesson duration tracking, and content queries. | OpenFeign (`CourseService`, `UnitService`), MinIO (`content-files`) |
+| **[InteractionService](file:///c:/Users/Debarghya2/Desktop/E_Learning_Microservices/InteractionService)** | `8085` | `elearning-interaction` | Student-course engagement, comments, reviews, ratings, and course discussions. | OpenFeign, Spring Cloud Eureka Client, PostgreSQL / MongoDB |
 
 ---
 
@@ -114,6 +121,7 @@ graph TD
   - `CourseService`
   - `UnitService`
   - `ContentService`
+  - `InteractionService`
 - **Browser Convenience**: `ServiceRegistry` includes `EurekaBrowserRedirectFilter` which automatically redirects browser visits from `/eureka` or `/eureka/` to the dashboard at `/`.
 
 ---
@@ -157,6 +165,7 @@ CREATE DATABASE "elearning-user";
 CREATE DATABASE "elearning-course";
 CREATE DATABASE "elearning-unit";
 CREATE DATABASE "elearning-content";
+CREATE DATABASE "elearning-interaction";
 ```
 
 > [!NOTE]
@@ -190,6 +199,7 @@ mc anonymous set download local/content-files
 3. **Courseservice** (`8082`)
 4. **UnitService** (`8084`)
 5. **ContentService** (`8083`)
+6. **InteractionService** (`8085`)
 
 ### Running via Terminal / Maven:
 
@@ -213,6 +223,10 @@ mvn spring-boot:run
 # Terminal 5: Content Service
 cd ContentService
 mvn spring-boot:run
+
+# Terminal 6: Interaction Service
+cd InteractionService
+mvn spring-boot:run
 ```
 
 ### Running via VS Code / Antigravity IDE:
@@ -222,6 +236,7 @@ The repository includes launch definitions in [`.vscode/launch.json`](file:///c:
 - `Spring Boot-CourseServiceApplication<CourseService>`
 - `Spring Boot-UnitServiceApplication<UnitService>`
 - `Spring Boot-ContentServiceApplication<ContentService>`
+- `Spring Boot-InteractionServiceApplication<InteractionService>`
 
 ---
 
@@ -451,6 +466,24 @@ The repository includes launch definitions in [`.vscode/launch.json`](file:///c:
 #### B. Fetch Contents by Unit ID
 - **Method**: `GET /api/v1/content/unit/{unitId}`
 - **Response**: `200 OK` (Array of `Content` objects ordered by `lessonIndex ASC`)
+
+---
+
+### 6. Interaction Service (Port 8085)
+- **Base URL**: `http://localhost:8085/api/v1/interaction`
+
+#### A. Service Status & Health
+- **Method**: `GET /api/v1/interaction/status`
+- **Response**: `200 OK`
+  ```json
+  {
+    "service": "InteractionService",
+    "status": "UP",
+    "port": 8085,
+    "timestamp": "2026-09-08T05:10:00Z",
+    "registeredWithEureka": true
+  }
+  ```
 
 ---
 

@@ -54,6 +54,28 @@
             "args": "",
             "envFile": "${workspaceFolder}/.env",
             "vmArgs": "-Xmx512m -Xms64m -Dcom.sun.management.jmxremote -Dspring.jmx.enabled=true -Dspring.application.admin.enabled=true -Dspring.boot.project.name=UnitService"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-InteractionServiceApplication<InteractionService>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.learning.InteractionService.InteractionServiceApplication",
+            "projectName": "InteractionService",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": "-Xmx512m -Xms64m -Dcom.sun.management.jmxremote -Dspring.jmx.enabled=true -Dspring.application.admin.enabled=true -Dspring.boot.project.name=InteractionService"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-ConfigServerApplication<Config-Server>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.learning.Config_Server.ConfigServerApplication",
+            "projectName": "Config-Server",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env",
+            "vmArgs": "-Xmx512m -Xms64m -Dcom.sun.management.jmxremote -Dspring.jmx.enabled=true -Dspring.application.admin.enabled=true -Dspring.boot.project.name=Config-Server"
         }
     ]
 }

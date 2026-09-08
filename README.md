@@ -26,10 +26,11 @@ graph TD
         CS["Course Service<br/>Port: 8082"]
         UN["Unit Service<br/>Port: 8084"]
         CT["Content Service<br/>Port: 8083"]
+        IS["Interaction Service<br/>Port: 8085"]
     end
 
     subgraph Persistence & Object Storage
-        PG[("PostgreSQL Databases<br/>(elearning-user, course, unit, content)")]
+        PG[("PostgreSQL Databases<br/>(elearning-user, course, unit, content, interaction)")]
         MO["MinIO Object Storage<br/>Port: 9000 / 9001<br/>(Buckets: course-thumbnail, content-files)"]
     end
 
@@ -37,11 +38,13 @@ graph TD
     Client -->|Course Catalog & Admin| CS
     Client -->|Curriculum Structure| UN
     Client -->|Lesson Media & Video Streams| CT
+    Client -->|Ratings & Comments| IS
 
     US -.->|Registers| SR
     CS -.->|Registers| SR
     UN -.->|Registers| SR
     CT -.->|Registers| SR
+    IS -.->|Registers| SR
 
     UN -->|Feign: Verify Course Exists| CS
     CT -->|Feign: Verify Course & Unit| CS
@@ -52,6 +55,7 @@ graph TD
     CS --> PG
     UN --> PG
     CT --> PG
+    IS --> PG
 
     CS -->|Course Thumbnails| MO
     CT -->|Video Lectures & Docs| MO
@@ -68,6 +72,8 @@ graph TD
 | **[Courseservice](file:///c:/Users/Debarghya2/Desktop/E_Learning_Microservices/Courseservice)** | `8082` | `elearning-course` | Course creation, management, taxonomy, hierarchical course-tree | MinIO (`course-thumbnail`), Feign &rarr; Unit & Content |
 | **[UnitService](file:///c:/Users/Debarghya2/Desktop/E_Learning_Microservices/UnitService)** | `8084` | `elearning-unit` | Course curriculum structuring, auto-incrementing unit index | Feign &rarr; Course & Content |
 | **[ContentService](file:///c:/Users/Debarghya2/Desktop/E_Learning_Microservices/ContentService)** | `8083` | `elearning-content` | Multipart lesson uploads, video files, reading materials | MinIO (`content-files`), Feign &rarr; Course & Unit |
+| **[InteractionService](file:///c:/Users/Debarghya2/Desktop/E_Learning_Microservices/InteractionService)** | `8085` | `elearning-interaction` | Student engagement, comments, reviews, ratings | Eureka Client, OpenFeign, PostgreSQL / Mongo |
+| **[Config-Server](file:///c:/Users/Debarghya2/Desktop/E_Learning_Microservices/Config-Server)** | `8888` | *None* | Centralized external configuration repository | Spring Cloud Config Server, Native Profile |
 | **[frontend](file:///c:/Users/Debarghya2/Desktop/E_Learning_Microservices/frontend)** | `5173` | *None* | Modern interactive web UI | React 19, Vite, Lucide Icons |
 
 ---
@@ -96,6 +102,7 @@ CREATE DATABASE "elearning-user";
 CREATE DATABASE "elearning-course";
 CREATE DATABASE "elearning-unit";
 CREATE DATABASE "elearning-content";
+CREATE DATABASE "elearning-interaction";
 ```
 
 ### 2. MinIO Buckets Setup
@@ -127,6 +134,9 @@ cd UnitService && mvn spring-boot:run
 
 # 5. Content Service (Port 8083)
 cd ContentService && mvn spring-boot:run
+
+# 6. Interaction Service (Port 8085)
+cd InteractionService && mvn spring-boot:run
 ```
 
 *Note: One-click debug profiles are also available in [`.vscode/launch.json`](file:///c:/Users/Debarghya2/Desktop/E_Learning_Microservices/.vscode/launch.json).*
@@ -158,6 +168,9 @@ cd ContentService && mvn spring-boot:run
 - `POST /api/v1/content/upload?courseId={courseId}&unitId={unitId}` &mdash; Upload lesson media (`multipart/form-data`)
 - `POST /api/v1/content/create?courseId={courseId}&unitId={unitId}` &mdash; Create lesson content
 - `GET /api/v1/content/unit/{unitId}` &mdash; Get all lessons in a unit (ordered by lessonIndex)
+
+### Interaction Service (`http://localhost:8085`)
+- `GET /api/v1/interaction/status` &mdash; Health and Eureka registration status
 
 ---
 

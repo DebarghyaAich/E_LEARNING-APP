@@ -23,6 +23,10 @@ export default defineConfig({
         target: 'http://localhost:8081',
         changeOrigin: true,
       },
+      '/api/v1/interaction': {
+        target: 'http://localhost:8085',
+        changeOrigin: true,
+      },
     },
   },
 })

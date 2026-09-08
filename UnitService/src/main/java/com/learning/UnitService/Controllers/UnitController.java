@@ -100,7 +100,7 @@ public class UnitController {
     }
 
     // get all unit by courseID
-    @GetMapping({"/course/{courseId}", "/course/view/{courseId}", "/course/{courseId}/units"})
+    @GetMapping({"/course/{courseId}", "/course/view/{courseId}", "/course/{courseId}/units", "/course/units/{courseId}"})
     public ResponseEntity<List<Unit>> getUnitsByCourseId(@PathVariable String courseId) {
         return ResponseEntity.ok(unitService.getUnitsByCourseId(courseId));
     }

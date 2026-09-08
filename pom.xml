@@ -18,5 +18,7 @@
 		<module>Courseservice</module>
 		<module>userservice</module>
 		<module>UnitService</module>
+		<module>InteractionService</module>
+		<module>Config-Server</module>
 	</modules>
 </project>
